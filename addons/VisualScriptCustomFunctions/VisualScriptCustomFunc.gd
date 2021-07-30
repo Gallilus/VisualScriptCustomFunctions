@@ -2,10 +2,11 @@ tool
 extends VisualScriptCustomNode
 class_name VisualScriptCustomFunc
 
-export var sequenced := false setget set_sequenced
-func set_sequenced(value):
-	sequenced = value
-	ports_changed_notify()
+export var sequenced := false setget _set_sequenced
+func _set_sequenced(value):
+	if not sequenced == value:
+		sequenced = value
+		ports_changed_notify()
 func _has_input_sequence_port():
 	return sequenced
 func _get_output_sequence_port_count():
@@ -18,8 +19,12 @@ var _output_clues := []
 #func _custom_function(): # not implemented as overwritable func due to locking of the methods signature
 #	pass
 
-var _combined_method_info := {"args":[],"return":{"type":0}}
+var _combined_method_info := {}
 func update_combined_method_info():
+	
+	if not _combined_method_info.empty():
+		return
+	
 	if not self.has_method("_custom_function"):
 		printerr("VisualScriptCustomFunc requires a _custom_function(<args>) method to work.")
 		return
